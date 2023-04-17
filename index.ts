@@ -1,10 +1,11 @@
 import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import User, { IUser} from './models/User';
+import User from './models/User';
 import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app: Express = express();
-const port = 5000
 
 /**
  * bodyparser option 설정
@@ -14,8 +15,7 @@ const port = 5000
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const uri = 'mongodb+srv://sroovy:dltndus1@boilerplate.shur2ov.mongodb.net/?retryWrites=true&w=majority';
-  mongoose.connect(uri)
+mongoose.connect(process.env.MONGO_URI as string)
   .then(() => {
     console.log('Connected to MongoDB');
   })
@@ -24,7 +24,7 @@ const uri = 'mongodb+srv://sroovy:dltndus1@boilerplate.shur2ov.mongodb.net/?retr
   });
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!')
+  res.send('Hello World!!!!!!')
 })
 
 app.post('/register', async(req: Request, res: Response) => {
@@ -44,6 +44,6 @@ app.post('/register', async(req: Request, res: Response) => {
   }
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(process.env.PORT, () => {
+  console.log(`Example app listening on port ${process.env.PORT}`)
 })
