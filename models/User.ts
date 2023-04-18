@@ -1,4 +1,6 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
+const saltRounds = 10;
 
 export interface IUser {
   name: string;
@@ -21,16 +23,16 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     trim: true,
-    unique: 1,
+    unique: 1
   },
   password: {
     type: String,
     required: true,
-    maxlength: 15,
+    maxlength: 15
   },
   lastname: {
     type: String,
-    maxlength: 50,
+    maxlength: 50
   },
   role: {
     type: Number,
@@ -43,7 +45,25 @@ const userSchema = new Schema<IUser>({
   tokenExp: {
     type: Number
   }
-})
+});
+
+// save 하기전에 실행할 함수
+userSchema.pre('save', function (next) {
+  const user = this;
+
+  // 비밀번호를 변경할때만 암호화
+  if (user.isModified('password')) {
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      if (err) return next(err);
+
+      bcrypt.hash(user.password, salt, function (err, hash) {
+        if (err) return next(err);
+        user.password = hash;
+        next();
+      });
+    });
+  }
+});
 
 const User = model<IUser>('User', userSchema);
 export default User;
