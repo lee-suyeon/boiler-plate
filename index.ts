@@ -15,23 +15,23 @@ const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-mongoose.connect(process.env.MONGO_URI as string)
+mongoose
+  .connect(process.env.MONGO_URI as string)
   .then(() => {
     console.log('Connected to MongoDB');
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Error connecting to MongoDB:', error);
   });
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!!!!!!')
-})
+  res.send('Hello World!!!!!!');
+});
 
-app.post('/register', async(req: Request, res: Response) => {
-  
+app.post('/register', async (req: Request, res: Response) => {
   // user model 생성
   const user = new User(req.body);
-  
+
   try {
     // 회원가입 시 필요한 정보들을 client에서 가져오면 db에 저장한다.
     const userInfo = await user.save();
@@ -39,11 +39,11 @@ app.post('/register', async(req: Request, res: Response) => {
       success: true,
       userInfo
     });
-  } catch(err) {
+  } catch (err) {
     res.json({ success: false, err });
   }
-})
+});
 
 app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}`)
-})
+  console.log(`Example app listening on port ${process.env.PORT}`);
+});
