@@ -11,6 +11,10 @@ export interface IUser {
   avatar?: string;
   token: string;
   tokenExp: number;
+  comparePassword: (
+    plainPassword: string,
+    callback: (err: any, isMatch: boolean) => void
+  ) => void;
 }
 
 const userSchema = new Schema<IUser>({
@@ -62,8 +66,21 @@ userSchema.pre('save', function (next) {
         next();
       });
     });
+  } else {
+    next();
   }
 });
+
+userSchema.methods.comparePassword = function (
+  plainPassword: string,
+  callback: (err: any, isMatch?: boolean) => {}
+) {
+  // plainPassword를 암호화 해서 db에 저장된 암호화된 비밀번호랑 비교
+  bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
+    if (err) return callback(err);
+    callback(null, isMatch);
+  });
+};
 
 const User = model<IUser>('User', userSchema);
 export default User;
